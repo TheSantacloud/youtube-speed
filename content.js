@@ -15,7 +15,8 @@ chrome.runtime.onMessage.addListener(function(message) {
 });
 
 function modifyRate(delta) {
-    let currentRate = document.querySelector("video").playbackRate;
+    let video = document.querySelector("video");
+    let currentRate = video.playbackRate;
     let newRate = currentRate + delta;
 
     if (newRate < 1) {
@@ -26,8 +27,10 @@ function modifyRate(delta) {
         return;
     }
 
-    document.querySelector("video").playbackRate = newRate;
-    document.querySelector("video").defaultPlaybackRate = newRate;
+    video.playbackRate = newRate;
+    video.defaultPlaybackRate = newRate;
+    video.onplay = () => video.playbackRate = newRate;
+
     showToast("Playback Rate: " + newRate);
 }
 
