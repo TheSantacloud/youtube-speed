@@ -1,0 +1,50 @@
+{
+    "name": "youtube-speed",
+    "version": "0.1.0",
+    "description": "Better control over YouTube playing speed",
+    "manifest_version": 3,
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "action": {
+        "default_icon": {
+            "16": "assets/icon_red.png",
+            "48": "assets/icon_red.png",
+            "128": "assets/icon_red.png"
+        }
+    },
+    "icons": {
+        "16": "assets/icon_red.png",
+        "48": "assets/icon_red.png",
+        "128": "assets/icon_red.png"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "commands": {
+        "increase_rate": {
+            "suggested_key": {
+                "default": "Alt+J"
+            },
+            "description": "Increase playback rate"
+        },
+        "decrease_rate": {
+            "suggested_key": {
+                "default": "Alt+K"
+            },
+            "description": "Decrease playback rate"
+        }
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://*.youtube.com/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_start"
+        }
+    ]
+}
