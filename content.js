@@ -27,6 +27,7 @@ function modifyRate(delta) {
     }
 
     document.querySelector("video").playbackRate = newRate;
+    document.querySelector("video").defaultPlaybackRate = newRate;
     showToast("Playback Rate: " + newRate);
 }
 
