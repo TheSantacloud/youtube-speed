@@ -1,18 +1,20 @@
 {
     "name": "youtube-speed",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Better control over YouTube playing speed",
     "manifest_version": 3,
     "permissions": [
         "activeTab",
-        "scripting"
+        "scripting",
+        "storage"
     ],
     "action": {
         "default_icon": {
             "16": "assets/icon_red.png",
             "48": "assets/icon_red.png",
             "128": "assets/icon_red.png"
-        }
+        },
+        "default_popup": "popup.html"
     },
     "icons": {
         "16": "assets/icon_red.png",

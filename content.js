@@ -3,16 +3,44 @@ const TOAST_TIMEOUT = 0.5;
 const TOAST_ID = 'yt-speed-toast';
 
 let toastTimer;
+let channelsData = {};
 
-chrome.runtime.onMessage.addListener(function(message) {
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+
+    if (message.channelsData) {
+        channelsData = message.channelsData;
+        waitForElement('ytd-video-owner-renderer ytd-channel-name', changeRate);
+        return;
+    }
+
     if (message.action === "increase_rate") {
         modifyRate(RATE);
     } else if (message.action === "decrease_rate") {
         modifyRate(-RATE);
+    } else if (message.action === "ping") {
+        sendResponse({ status: "pong" });
     } else {
-        console.err("Unknown command from YouTube speed");
+        console.error(`Unknown command from YouTube speed: ${message}`);
     }
 });
+
+function waitForElement(selector, callback) {
+    const element = document.querySelector(selector);
+    if (element) {
+        callback(element);
+    } else {
+        setTimeout(() => waitForElement(selector, callback), 100);
+    }
+}
+
+function changeRate() {
+    const channelName = document.querySelector('ytd-video-owner-renderer ytd-channel-name').innerText;
+    const currentRate = document.querySelector("video").playbackRate;
+
+    if (!channelsData[channelName]) return;
+
+    modifyRate(channelsData[channelName].playbackRate - currentRate);
+}
 
 function modifyRate(delta) {
     let video = document.querySelector("video");
@@ -20,10 +48,10 @@ function modifyRate(delta) {
     let newRate = currentRate + delta;
 
     if (newRate < 1) {
-        console.err("YouTube Speed - can't have a rate lower than 1");
+        console.error("YouTube Speed - can't have a rate lower than 1");
         return;
     } else if (newRate > 3) {
-        console.err("YouTube Speed - can't have a rate higher than 3");
+        console.error("YouTube Speed - can't have a rate higher than 3");
         return;
     }
 

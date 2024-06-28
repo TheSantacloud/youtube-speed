@@ -1,0 +1,116 @@
+body {
+    background-color: #181818;
+    color: #FFFFFF;
+    font-family: Arial, sans-serif;
+    font-size: 1.2em;
+}
+
+.container {
+    margin: 1em auto;
+    background-color: #202020;
+    border-radius: 1em;
+    padding: 0.2em;
+    width: 35em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #303030;
+}
+
+th,
+td {
+    padding: 0.3em;
+    text-align: left;
+}
+
+.text-col {
+    padding-left: 1em;
+    width: 55%;
+}
+
+.num-col {
+    width: 25%;
+}
+
+.actions {
+    width: 20%;
+}
+
+tbody tr:hover {
+    background-color: #3a3a3a;
+}
+
+.editing .text-col input,
+.editing .num-col input {
+    background-color: #202020;
+    color: #FFFFFF;
+    border: 1px solid #FF0000;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #282828;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #242424;
+}
+
+tbody tr.editing {
+    background-color: #383838;
+    font-size: 1.2em;
+}
+
+.actions {
+    display: flex;
+    gap: 0.2em;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+input {
+    font-size: 1em;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button {
+    background: none;
+    border: none;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+
+button:hover {
+    color: #ee0000;
+}
+
+#addButton {
+    margin-top: 1em;
+    padding: 0.3em 0.5em;
+    background-color: #ff0000;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 0.2em;
+    cursor: pointer;
+}
+
+#addButton:hover {
+    background-color: #dd0000;
+}
+
+#addButton:disabled {
+    background-color: #cccccc;
+    color: #efefef;
+    cursor: default;
+}
