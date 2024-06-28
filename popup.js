@@ -31,6 +31,7 @@ function toggleEditMode(tr) {
         editButton.innerHTML = '&#x2714;';
         const playbackRate = tr.querySelector('.num-col');
         playbackRate.innerHTML = `<input type="number" step="0.5" value="${playbackRate.textContent}" />`;
+        playbackRate.children[0].focus();
         playbackRate.addEventListener('keydown', event => {
             if (event.key === 'Enter') saveRow(tr);
         });
