@@ -1,6 +1,6 @@
 {
     "name": "youtube-speed",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "Better control over YouTube playing speed",
     "manifest_version": 3,
     "permissions": [
@@ -25,6 +25,12 @@
         "service_worker": "background.js"
     },
     "commands": {
+        "_execute_action": {
+            "suggested_key": {
+                "default": "Alt+Shift+S"
+            },
+            "description": "Open the YouTube speed extension"
+        },
         "save_rate": {
             "suggested_key": {
                 "default": "Alt+S"
