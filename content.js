@@ -6,7 +6,6 @@ let toastTimer;
 let channelsData = {};
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-
     if (message.channelsData) {
         channelsData = message.channelsData;
         waitForElement('ytd-video-owner-renderer ytd-channel-name', changeRate);
@@ -19,6 +18,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         modifyRate(-RATE);
     } else if (message.action === "ping") {
         sendResponse({ status: "pong" });
+    } else if (message.action === "toast") {
+        showToast(message["toastMessage"]);
     } else {
         console.error(`Unknown command from YouTube speed: ${message}`);
     }
