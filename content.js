@@ -5,7 +5,7 @@ const TOAST_ID = 'yt-speed-toast';
 let toastTimer;
 let channelsData = {};
 
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(message, _, sendResponse) {
     if (message.channelsData) {
         channelsData = message.channelsData;
         waitForElement('ytd-video-owner-renderer ytd-channel-name', changeRate);
@@ -61,6 +61,22 @@ function modifyRate(delta) {
     video.onplay = () => video.playbackRate = newRate;
 
     showToast("Playback Rate: " + newRate);
+    waitForElement('.ytp-menuitem-label', () => modifyPlaybackLabel(newRate));
+}
+
+function modifyPlaybackLabel(playbackRate) {
+    const menuItems = document.querySelectorAll(".ytp-menuitem-label");
+    console.log(menuItems);
+    const playbackItems = Array.from(menuItems)?.filter((item) => item.innerText.includes("Playback"));
+    if (playbackItems.length != 1) {
+        console.log(playbackItems);
+        console.warn("YouTube speed could not find the playback item from the settings pane. Not changing anything.");
+        return;
+    }
+    const playbackItem = playbackItems[0];
+    const settingsPane = playbackItem.parentNode;
+    const playbackLabel = settingsPane.querySelector(".ytp-menuitem-content");
+    playbackLabel.innerText = `${playbackRate}`;
 }
 
 function showToast(message) {
