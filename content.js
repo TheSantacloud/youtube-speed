@@ -49,10 +49,10 @@ function modifyRate(delta) {
     let newRate = currentRate + delta;
 
     if (newRate < 1) {
-        console.error("YouTube Speed - can't have a rate lower than 1");
+        console.log("YouTube Speed - can't have a rate lower than 1");
         return;
     } else if (newRate > 3) {
-        console.error("YouTube Speed - can't have a rate higher than 3");
+        console.log("YouTube Speed - can't have a rate higher than 3");
         return;
     }
 
@@ -66,10 +66,8 @@ function modifyRate(delta) {
 
 function modifyPlaybackLabel(playbackRate) {
     const menuItems = document.querySelectorAll(".ytp-menuitem-label");
-    console.log(menuItems);
     const playbackItems = Array.from(menuItems)?.filter((item) => item.innerText.includes("Playback"));
     if (playbackItems.length != 1) {
-        console.log(playbackItems);
         console.warn("YouTube speed could not find the playback item from the settings pane. Not changing anything.");
         return;
     }
