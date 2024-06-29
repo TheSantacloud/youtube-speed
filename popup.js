@@ -23,6 +23,23 @@ function createTableRow(key, { channelUrl, playbackRate }) {
     return tr;
 }
 
+function searchData(phrase) {
+    let data = channelsData;
+    if (phrase.length > 2) {
+        let filteredChannelsData = {};
+        Object.keys(channelsData).forEach(key => {
+            if (key.toLowerCase().includes(phrase)) {
+                filteredChannelsData[key] = channelsData[key];
+            }
+        });
+        if (Object.keys(filteredChannelsData).length > 0) {
+            data = filteredChannelsData;
+        }
+    }
+
+    populateTable(data);
+}
+
 function toggleEditMode(tr) {
     const isEditing = tr.classList.toggle('editing');
     const editButton = tr.querySelector('.edit-btn');
@@ -80,14 +97,14 @@ async function addCurrentParams() {
 
 function updateStorageChannels() {
     chrome.storage.sync.set({ channelsData: channelsData });
-    populateTable();
+    populateTable(channelsData);
 }
 
-function populateTable() {
+function populateTable(data) {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = '';
 
-    for (const [key, value] of Object.entries(channelsData || {})) {
+    for (const [key, value] of Object.entries(data || {})) {
         const tr = createTableRow(key, value);
         tableBody.appendChild(tr);
     }
@@ -97,6 +114,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const addButton = document.getElementById('addButton');
     addButton.addEventListener('click', addCurrentParams);
 
+    const searchBox = document.getElementById('searchBox');
+    searchBox.addEventListener('input', (event) => searchData(event.target.value));
+
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, async function(tabs) {
         addButton.disabled = !tabs[0].url?.includes("youtube.com");
     });
@@ -105,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.channelsData) {
             channelsData = data["channelsData"];
         }
-        populateTable();
+        populateTable(channelsData);
     });
 
 });

@@ -4,22 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dark Theme Table Popup</title>
     <link rel="stylesheet" href="popup.css">
 </head>
 
 <body>
     <div class="container">
-        <table id="dataTable">
-            <thead>
-                <tr>
-                    <th>Channel</th>
-                    <th>Rate</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"> </tbody>
-        </table>
+        <div class="searchContainer">
+            <input class="searchInput" type="text" placeholder="Search" id="searchBox" />
+        </div>
+        <div class="tableWrapper">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Channel</th>
+                        <th>Rate</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"> </tbody>
+            </table>
+        </div>
         <center>
             <button id="addButton">Add current channel</button>
         </center>
