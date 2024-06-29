@@ -8,12 +8,11 @@ function createTableRow(key, { channelUrl, playbackRate }) {
         <td class="text-col"><a href="${channelUrl}" target="_blank" title="${channelUrl}" rel="noopener noreferrer">${key}</a></td>
         <td class="num-col">${playbackRate}</td>
         <td class="actions">
-            <button class="edit-btn">&#x270E;</button>
-            <button class="delete-btn">&#x2716;</button>
+            <button class="delete-btn"> </button>
         </td>
     `;
 
-    tr.querySelector('.edit-btn').addEventListener('click', () => toggleEditMode(tr));
+    tr.querySelector('.num-col').addEventListener('dblclick', () => toggleEditMode(tr));
     tr.querySelector('.delete-btn').addEventListener('click', () => {
         tr.remove();
         delete channelsData[key];
@@ -25,7 +24,7 @@ function createTableRow(key, { channelUrl, playbackRate }) {
 
 function searchData(phrase) {
     let data = channelsData;
-    if (phrase.length > 2) {
+    if (phrase.length > 0) {
         let filteredChannelsData = {};
         Object.keys(channelsData).forEach(key => {
             if (key.toLowerCase().includes(phrase)) {
@@ -42,12 +41,10 @@ function searchData(phrase) {
 
 function toggleEditMode(tr) {
     const isEditing = tr.classList.toggle('editing');
-    const editButton = tr.querySelector('.edit-btn');
 
     if (isEditing) {
-        editButton.innerHTML = '&#x2714;';
         const playbackRate = tr.querySelector('.num-col');
-        playbackRate.innerHTML = `<input type="number" step="0.5" value="${playbackRate.textContent}" />`;
+        playbackRate.innerHTML = `<input type="number" step="0.5" value="${playbackRate.textContent}" style="width: 100%; box-sizing: border-box;"/>`;
         playbackRate.children[0].focus();
         playbackRate.addEventListener('keydown', event => {
             if (event.key === 'Enter') saveRow(tr);
@@ -72,29 +69,6 @@ function saveRow(tr) {
     updateStorageChannels();
 }
 
-async function addCurrentParams() {
-    try {
-        const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-        const tabId = tabs[0].id;
-
-        const [result] = await chrome.scripting.executeScript({
-            target: { tabId },
-            func: () => {
-                const channelName = document.querySelector('ytd-video-owner-renderer ytd-channel-name').innerText;
-                const channelUrl = document.querySelector('ytd-video-owner-renderer ytd-channel-name a.yt-simple-endpoint').href;
-                const playbackRate = document.querySelector('video')?.playbackRate || 1.0;
-                return { channelName, channelUrl, playbackRate };
-            },
-        });
-
-        const { channelName, channelUrl, playbackRate } = result.result;
-        channelsData[channelName] = { playbackRate, channelUrl };
-        updateStorageChannels();
-    } catch (error) {
-        console.error('Error adding current params:', error);
-    }
-}
-
 function updateStorageChannels() {
     chrome.storage.sync.set({ channelsData: channelsData });
     populateTable(channelsData);
@@ -110,16 +84,27 @@ function populateTable(data) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const addButton = document.getElementById('addButton');
-    addButton.addEventListener('click', addCurrentParams);
+function populateInstructions() {
+    const instructionsContainer = document.getElementById("instructionsContainer");
+    chrome.commands.getAll(function(commands) {
+        commands.forEach(command => {
+            const instruction = document.createElement('li');
+            instruction.classList.add("instruction");
+            let description = command.description;
+            if (!description) {
+                description = "Open popup";
+            }
+            instruction.innerHTML = `<span class="description">${description}</span><span class="shortcut">${command.shortcut}</span>`;
+            instructionsContainer.appendChild(instruction);
+        });
+    });
+}
 
+document.addEventListener('DOMContentLoaded', () => {
     const searchBox = document.getElementById('searchBox');
     searchBox.addEventListener('input', (event) => searchData(event.target.value));
 
-    chrome.tabs.query({ active: true, lastFocusedWindow: true }, async function(tabs) {
-        addButton.disabled = !tabs[0].url?.includes("youtube.com");
-    });
+    populateInstructions();
 
     chrome.storage.sync.get("channelsData", (data) => {
         if (data.channelsData) {
