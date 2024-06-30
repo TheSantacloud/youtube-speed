@@ -13,6 +13,15 @@ function sendChannelsData() {
     });
 }
 
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) =>
+    chrome.tabs.sendMessage(details.tabId, { action: "ping" }, (response) => {
+        if (details.url.includes("watch?v") && !chrome.runtime.lastError) {
+            chrome.tabs.sendMessage(details.tabId, { action: "new_video" })
+                , { url: [{ "pathContains": "watch" }] }
+        }
+    })
+);
+
 chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace === 'sync' && changes.channelsData) {
         sendChannelsData();

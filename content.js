@@ -8,7 +8,7 @@ let channelsData = {};
 chrome.runtime.onMessage.addListener(function(message, _, sendResponse) {
     if (message.channelsData) {
         channelsData = message.channelsData;
-        waitForElement('ytd-video-owner-renderer ytd-channel-name', changeRate);
+        waitForElement('ytd-video-owner-renderer ytd-channel-name', changeRate, 10);
         return;
     }
 
@@ -20,17 +20,38 @@ chrome.runtime.onMessage.addListener(function(message, _, sendResponse) {
         sendResponse({ status: "pong" });
     } else if (message.action === "toast") {
         showToast(message["toastMessage"]);
+    } else if (message.action === "new_video") {
+        waitForElement('ytd-video-owner-renderer ytd-channel-name', (channelName) => {
+            return waitForChannelToChange(channelName.innerText.trim(), changeRate, 10);
+        }, 10);
     } else {
         console.error(`Unknown command from YouTube speed: ${message}`);
     }
 });
 
-function waitForElement(selector, callback) {
+function waitForChannelToChange(currentChannelName, callback, retries) {
+    const newChannelName = document.querySelector('ytd-video-owner-renderer ytd-channel-name').innerText.trim();
+
+    if (newChannelName !== currentChannelName) {
+        callback();
+    } else {
+        if (retries === 0) {
+            return;
+        } else {
+            setTimeout(() => waitForChannelToChange(currentChannelName, callback, retries - 1), 100);
+        }
+    }
+}
+
+function waitForElement(selector, callback, retries) {
+    if (retries == 0) {
+        return;
+    }
     const element = document.querySelector(selector);
     if (element) {
         callback(element);
     } else {
-        setTimeout(() => waitForElement(selector, callback), 100);
+        setTimeout(() => waitForElement(selector, callback, retries - 1), 100);
     }
 }
 
@@ -38,9 +59,11 @@ function changeRate() {
     const channelName = document.querySelector('ytd-video-owner-renderer ytd-channel-name').innerText;
     const currentRate = document.querySelector("video").playbackRate;
 
-    if (!channelsData[channelName]) return;
-
-    modifyRate(channelsData[channelName].playbackRate - currentRate);
+    if (channelName in channelsData) {
+        modifyRate(channelsData[channelName].playbackRate - currentRate);
+    } else {
+        modifyRate(1 - currentRate);
+    }
 }
 
 function modifyRate(delta) {
@@ -48,27 +71,32 @@ function modifyRate(delta) {
     let currentRate = video.playbackRate;
     let newRate = currentRate + delta;
 
-    if (newRate < 1) {
-        console.log("YouTube Speed - can't have a rate lower than 1");
-        return;
-    } else if (newRate > 3) {
-        console.log("YouTube Speed - can't have a rate higher than 3");
+    if (newRate < 1 || newRate > 3) {
+        console.log("YouTube speed rate is clamped between 1 and 3, and cannot be set outside it");
         return;
     }
 
     video.playbackRate = newRate;
     video.defaultPlaybackRate = newRate;
-    video.onplay = () => video.playbackRate = newRate;
+    video.onplay = () => onVideoSwitch(newRate);
 
     showToast("Playback Rate: " + newRate);
-    waitForElement('.ytp-menuitem-label', () => modifyPlaybackLabel(newRate));
+    waitForElement('.ytp-menuitem-label', () => modifyPlaybackLabel(newRate), 10);
+}
+
+function onVideoSwitch(playbackRate) {
+    waitForElement(".ytp-skip-ad-button", () => {
+        document.querySelector(".ytp-skip-ad-button").click()
+    }, 10);
+    let video = document.querySelector("video");
+    video.playbackRate = playbackRate;
 }
 
 function modifyPlaybackLabel(playbackRate) {
     const menuItems = document.querySelectorAll(".ytp-menuitem-label");
     const playbackItems = Array.from(menuItems)?.filter((item) => item.innerText.includes("Playback"));
     if (playbackItems.length != 1) {
-        console.warn("YouTube speed could not find the playback item from the settings pane. Not changing anything.");
+        console.info("YouTube speed could not find the playback item from the settings pane. Not changing anything.");
         return;
     }
     const playbackItem = playbackItems[0];
