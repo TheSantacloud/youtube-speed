@@ -4,10 +4,15 @@ const TOAST_ID = 'yt-speed-toast';
 
 let toastTimer;
 let channelsData = {};
+let defaultPlaybackRate = 1;
 
 chrome.runtime.onMessage.addListener(function(message, _, sendResponse) {
     if (message.channelsData) {
         channelsData = message.channelsData;
+        waitForElement('ytd-video-owner-renderer ytd-channel-name', changeRate, 10);
+        return;
+    } else if (message.defaultPlaybackRate) {
+        defaultPlaybackRate = message.defaultPlaybackRate;
         waitForElement('ytd-video-owner-renderer ytd-channel-name', changeRate, 10);
         return;
     }
@@ -25,7 +30,7 @@ chrome.runtime.onMessage.addListener(function(message, _, sendResponse) {
             return waitForChannelToChange(channelName.innerText.trim(), changeRate, 10);
         }, 10);
     } else {
-        console.error(`Unknown command from YouTube speed: ${message}`);
+        console.error(`Unknown command from YouTube speed: ${JSON.stringify(message)}`);
     }
 });
 
@@ -59,10 +64,10 @@ function changeRate() {
     const channelName = document.querySelector('ytd-video-owner-renderer ytd-channel-name').innerText;
     const currentRate = document.querySelector("video").playbackRate;
 
-    if (channelName in channelsData) {
+    if (channelName in channelsData && channelsData[channelName].playbackRate !== currentRate) {
         modifyRate(channelsData[channelName].playbackRate - currentRate);
-    } else {
-        modifyRate(1 - currentRate);
+    } else if (!channelName in channelsData) {
+        modifyRate(defaultPlaybackRate - currentRate);
     }
 }
 
@@ -106,6 +111,7 @@ function modifyPlaybackLabel(playbackRate) {
 }
 
 function showToast(message) {
+    if (!document.URL.includes("watch?v")) return;
     let toast = document.getElementById(TOAST_ID);
 
     if (!toast) {

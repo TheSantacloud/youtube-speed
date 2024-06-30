@@ -5,10 +5,22 @@ body {
     font-size: 1em;
 }
 
+.container {
+    margin: 1em auto;
+    background-color: #202020;
+    border-radius: 1em;
+    width: 20em;
+    padding-bottom: 0.3em;
+    padding-top: 0.3em;
+}
+
 #instructionsContainer {
     list-style-type: none;
-    padding: 0;
+    padding: 1em 0;
     font-size: 0.8em;
+    background: transparent;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .instruction {
@@ -29,22 +41,32 @@ body {
     letter-spacing: 0.1em;
 }
 
-.container {
-    margin: 1em auto;
-    background-color: #202020;
-    border-radius: 1em;
-    padding: 0.75em;
-    width: 20em;
+.tableWrapper {
+    max-height: 18em;
+    overflow-y: auto;
+    position: relative;
+    margin: 0 0.5em;
 }
 
-.tableWrapper {
-    max-height: 20em;
-    overflow-y: auto;
+.tableWrapper::-webkit-scrollbar {
+    width: 3px;
+}
+
+.tableWrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+    background-color: rgba(200, 0, 0, 0.7);
+    border: 1px solid transparent;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 0.3em;
 }
 
 thead {
@@ -123,6 +145,7 @@ a:hover {
     padding-top: 0.5em;
     padding-bottom: 0.5em;
     display: flex;
+    margin: 0 0.5em;
 }
 
 .searchInput {

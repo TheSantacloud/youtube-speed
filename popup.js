@@ -1,4 +1,5 @@
 let channelsData = {};
+let defaultPlaybackRate = 1;
 
 function createTableRow(key, { channelUrl, playbackRate }) {
     const tr = document.createElement('tr');
@@ -44,7 +45,7 @@ function toggleEditMode(tr) {
 
     if (isEditing) {
         const playbackRate = tr.querySelector('.num-col');
-        playbackRate.innerHTML = `<input type="number" step="0.5" value="${playbackRate.textContent}" style="width: 100%; box-sizing: border-box;"/>`;
+        playbackRate.innerHTML = `<input type="number" min="1" max="3" step="0.5" value="${playbackRate.textContent}" style="width: 100%; box-sizing: border-box;"/>`;
         playbackRate.children[0].focus();
         playbackRate.addEventListener('keydown', event => {
             if (event.key === 'Enter') saveRow(tr);
@@ -100,9 +101,21 @@ function populateInstructions() {
     });
 }
 
+function updateSlider(slider) {
+    const sliderValueSpan = document.getElementById('slider-value');
+    const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+    slider.style.background = `linear-gradient(to right, #ff0000 ${value}%, #5c5c5c ${value}%)`
+    sliderValueSpan.innerText = slider.value;
+
+    chrome.storage.sync.set({ defaultPlaybackRate: slider.value });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const searchBox = document.getElementById('searchBox');
     searchBox.addEventListener('input', (event) => searchData(event.target.value));
+
+    const slider = document.getElementById('youtube-slider');
+    slider.addEventListener('input', () => updateSlider(slider));
 
     document.addEventListener('keydown', (event) => {
         if (event.code === "KeyS" && event.altKey) {
@@ -119,4 +132,15 @@ document.addEventListener('DOMContentLoaded', () => {
         populateTable(channelsData);
     });
 
+    chrome.storage.sync.get("defaultPlaybackRate", (data) => {
+        if (data.defaultPlaybackRate) {
+            defaultPlaybackRate = data.defaultPlaybackRate;
+            slider.value = defaultPlaybackRate;
+            updateSlider(slider);
+        }
+    });
+
 });
+
+
+

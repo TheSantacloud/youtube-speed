@@ -13,6 +13,14 @@ function sendChannelsData() {
     });
 }
 
+function sendDefaultPlaybackRate() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        chrome.storage.sync.get("defaultPlaybackRate", (data) => {
+            chrome.tabs.sendMessage(tabs[0].id, { defaultPlaybackRate: data["defaultPlaybackRate"] });
+        });
+    });
+}
+
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) =>
     chrome.tabs.sendMessage(details.tabId, { action: "ping" }, (response) => {
         if (details.url.includes("watch?v") && !chrome.runtime.lastError) {
@@ -23,8 +31,12 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) =>
 );
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (namespace === 'sync' && changes.channelsData) {
+    if (namespace !== 'sync') return;
+    if (changes.channelsData) {
         sendChannelsData();
+    } else if (changes.defaultPlaybackRate
+        && changes.defaultPlaybackRate.newValue != changes.defaultPlaybackRate.oldValue) {
+        sendDefaultPlaybackRate();
     }
 });
 
@@ -32,6 +44,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     chrome.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
         if (!chrome.runtime.lastError && changeInfo.status === "complete") {
             sendChannelsData();
+            sendDefaultPlaybackRate();
         }
     });
 });

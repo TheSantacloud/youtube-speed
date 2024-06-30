@@ -1,0 +1,117 @@
+#defaultPlaybackRateContainer {
+    margin: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+#slider-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+}
+
+.slider-key {
+    color: grey;
+    text-align: left;
+}
+
+.slider-value {
+    color: rgba(255, 0, 0, 0.8);
+    text-align: right;
+}
+
+.slider-container {
+    width: 100%;
+    padding-top: 0.2em;
+    padding-bottom: 0.3em;
+}
+
+.youtube-slider {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #ff0000 50%, #5c5c5c 50%);
+    outline: none;
+    opacity: 0.8;
+    transition: opacity .15s ease-in-out;
+    cursor: pointer;
+}
+
+.youtube-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+    animation-duration: 0.2s;
+    background: transparent;
+    border-radius: 1px;
+}
+
+.youtube-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    margin-top: -5px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.youtube-slider::-webkit-slider-thumb:hover {
+    background: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.youtube-slider::-moz-range-track {
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+    animation-duration: 0.2s;
+    background: transparent;
+    border-radius: 1px;
+}
+
+.youtube-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.youtube-slider::-moz-range-thumb:hover {
+    background: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.youtube-slider::-ms-track {
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+    animation-duration: 0.2s;
+    background: transparent;
+    border-color: transparent;
+    border-width: 5px 0;
+    color: transparent;
+}
+
+.youtube-slider::-ms-thumb {
+    width: 15px;
+    height: 15px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.youtube-slider::-ms-thumb:hover {
+    background: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.youtube-slider:focus {
+    outline: none;
+}
