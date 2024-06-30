@@ -66,7 +66,7 @@ function changeRate() {
 
     if (channelName in channelsData && channelsData[channelName].playbackRate !== currentRate) {
         modifyRate(channelsData[channelName].playbackRate - currentRate);
-    } else if (!channelName in channelsData) {
+    } else if (!(channelName in channelsData)) {
         modifyRate(defaultPlaybackRate - currentRate);
     }
 }
