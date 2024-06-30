@@ -79,7 +79,15 @@ function populateTable(data) {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = '';
 
-    for (const [key, value] of Object.entries(data || {})) {
+    const ordered = Object.keys(data).sort().reduce(
+        (obj, key) => {
+            obj[key] = data[key];
+            return obj;
+        },
+        {}
+    );
+
+    for (const [key, value] of Object.entries(ordered || {})) {
         const tr = createTableRow(key, value);
         tableBody.appendChild(tr);
     }
