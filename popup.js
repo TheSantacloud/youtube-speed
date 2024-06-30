@@ -104,6 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchBox = document.getElementById('searchBox');
     searchBox.addEventListener('input', (event) => searchData(event.target.value));
 
+    document.addEventListener('keydown', (event) => {
+        if (event.code === "KeyS" && event.altKey) {
+            window.close();
+        }
+    });
+
     populateInstructions();
 
     chrome.storage.sync.get("channelsData", (data) => {

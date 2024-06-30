@@ -38,7 +38,7 @@ body {
 }
 
 .tableWrapper {
-    max-height: 10em;
+    max-height: 20em;
     overflow-y: auto;
 }
 
