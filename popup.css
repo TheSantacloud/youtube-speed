@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-    margin: 1em auto;
+    margin: 0.5em auto;
     background-color: #202020;
     border-radius: 1em;
     width: 20em;
@@ -16,7 +16,7 @@ body {
 
 #instructionsContainer {
     list-style-type: none;
-    padding: 1em 0;
+    padding: 0.6em 0;
     font-size: 0.8em;
     background: transparent;
     background-color: rgba(0, 0, 0, 0.2);
@@ -26,7 +26,7 @@ body {
 .instruction {
     display: flex;
     justify-content: space-between;
-    margin: 0 1em;
+    margin: 0.4em 1em;
     padding: 0.1em;
 }
 
@@ -90,6 +90,20 @@ td {
 .num-col {
     width: 30%;
     cursor: input;
+    vertical-align: bottom;
+}
+
+.text-container {
+    display: inline-block;
+    line-height: 1em;
+}
+
+.num-col span {
+    color: grey;
+    display: inline-block;
+    vertical-align: bottom;
+    line-height: 1;
+    margin-bottom: -0.1em;
 }
 
 .actions {
@@ -154,10 +168,10 @@ a:hover {
 
     background-color: transparent;
     transition: transform 250ms ease-in-out;
-    font-size: 14px;
-    line-height: 18px;
+    font-size: 1em;
+    line-height: 1em;
 
-    color: #575756;
+    color: grey;
     background-color: transparent;
     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
     background-repeat: no-repeat;

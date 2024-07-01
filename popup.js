@@ -7,7 +7,7 @@ function createTableRow(key, { channelUrl, playbackRate }) {
 
     tr.innerHTML = `
         <td class="text-col"><a href="${channelUrl}" target="_blank" title="${channelUrl}" rel="noopener noreferrer">${key}</a></td>
-        <td class="num-col">${playbackRate}</td>
+        <td class="num-col"><div class="text-container"><span>&times;</span>${playbackRate}</div></td>
         <td class="actions">
             <button class="delete-btn"> </button>
         </td>
