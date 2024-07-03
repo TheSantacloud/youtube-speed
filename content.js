@@ -61,14 +61,23 @@ function waitForElement(selector, callback, retries) {
 }
 
 function changeRate() {
-    const channelName = document.querySelector('ytd-video-owner-renderer ytd-channel-name').innerText;
-    const currentRate = document.querySelector("video").playbackRate;
+    const channelNameContainer = document.querySelector('ytd-video-owner-renderer ytd-channel-name');
+    const video = document.querySelector("video");
+
+    if (!(video || channelNameContainer)) {
+        console.error("Could not instantiate YouTube-speed. Please refresh");
+        return;
+    }
+
+    const channelName = channelNameContainer.innerText;
+    const currentRate = video.playbackRate;
 
     if (channelName in channelsData && channelsData[channelName].playbackRate !== currentRate) {
         modifyRate(channelsData[channelName].playbackRate - currentRate);
     } else if (!(channelName in channelsData)) {
         modifyRate(defaultPlaybackRate - currentRate);
     }
+    skipAd();
 }
 
 function modifyRate(delta) {
@@ -90,11 +99,15 @@ function modifyRate(delta) {
 }
 
 function onVideoSwitch(playbackRate) {
+    skipAd();
+    let video = document.querySelector("video");
+    video.playbackRate = playbackRate;
+}
+
+function skipAd() {
     waitForElement(".ytp-skip-ad-button", () => {
         document.querySelector(".ytp-skip-ad-button").click()
     }, 10);
-    let video = document.querySelector("video");
-    video.playbackRate = playbackRate;
 }
 
 function modifyPlaybackLabel(playbackRate) {

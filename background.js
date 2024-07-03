@@ -23,7 +23,7 @@ function sendDefaultPlaybackRate() {
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) =>
     chrome.tabs.sendMessage(details.tabId, { action: "ping" }, (response) => {
-        if (details.url.includes("watch?v") && !chrome.runtime.lastError) {
+        if (details.url.includes("watch?v") && !chrome.runtime.lastError && response.status === "pong") {
             chrome.tabs.sendMessage(details.tabId, { action: "new_video" })
                 , { url: [{ "pathContains": "watch" }] }
         }
@@ -40,9 +40,21 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
 });
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onActivated.addListener((activeInfo) => {
+    const tabId = activeInfo.tabId;
+    console.log("ACTIVATED", tabId);
     chrome.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
-        if (!chrome.runtime.lastError && changeInfo.status === "complete") {
+        if (!chrome.runtime.lastError && response.status === "pong") {
+            sendChannelsData();
+            sendDefaultPlaybackRate();
+        }
+    });
+});
+
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    chrome.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
+        if (!chrome.runtime.lastError && changeInfo.status === "complete" && response.status === "pong") {
             sendChannelsData();
             sendDefaultPlaybackRate();
         }
@@ -63,6 +75,9 @@ chrome.commands.onCommand.addListener(async (command) => {
             target: { tabId },
             func: getVideoDetails,
         });
+
+        if (!result) return;
+
         const { channelName, channelUrl, playbackRate } = result.result;
         chrome.storage.sync.get("channelsData", (data) => {
             let channelsData = data["channelsData"];
