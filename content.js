@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener(function(message, _, sendResponse) {
     } else if (message.action === "ping") {
         sendResponse({ status: "pong" });
     } else if (message.action === "toast") {
-        showToast(message["toastMessage"]);
+        notify(message["toastMessage"]);
     } else if (message.action === "new_video") {
         waitForElement('ytd-video-owner-renderer ytd-channel-name', (channelName) => {
             return waitForChannelToChange(channelName.innerText.trim(), changeRate, 10);
@@ -64,13 +64,15 @@ function changeRate() {
     const channelNameContainer = document.querySelector('ytd-video-owner-renderer ytd-channel-name');
     const video = document.querySelector("video");
 
-    if (!(video || channelNameContainer)) {
+    if (!(video && channelNameContainer)) {
         console.error("Could not instantiate YouTube-speed. Please refresh");
         return;
     }
 
     const channelName = channelNameContainer.innerText;
     const currentRate = video.playbackRate;
+
+    if (currentRate !== defaultPlaybackRate) return;
 
     if (channelName in channelsData && channelsData[channelName].playbackRate !== currentRate) {
         modifyRate(channelsData[channelName].playbackRate - currentRate);
@@ -94,7 +96,7 @@ function modifyRate(delta) {
     video.defaultPlaybackRate = newRate;
     video.onplay = () => onVideoSwitch(newRate);
 
-    showToast("Playback Rate: " + newRate);
+    notify("Playback Rate: " + newRate);
     waitForElement('.ytp-menuitem-label', () => modifyPlaybackLabel(newRate), 10);
 }
 
@@ -123,41 +125,39 @@ function modifyPlaybackLabel(playbackRate) {
     playbackLabel.innerText = `${playbackRate}`;
 }
 
-function showToast(message) {
+function notify(message) {
     if (!document.URL.includes("watch?v")) return;
+
     let toast = document.getElementById(TOAST_ID);
-
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = TOAST_ID;
-        toast.style.position = 'fixed';
-        toast.style.top = '5em';
-        toast.style.left = '50%';
-        toast.style.transform = 'translateX(-50%)';
-        toast.style.background = '#333';
-        toast.style.color = '#fff';
-        toast.style.padding = '10px 20px';
-        toast.style.borderRadius = '0.3em';
-        toast.style.fontSize = '4em';
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.1s ease';
-        toast.style.zIndex = '9999';
-        document.body.appendChild(toast);
-    }
-
+    if (!toast) toast = spawnToast();
     toast.innerText = message;
-    toast.style.opacity = '0.75';
 
-    if (toastTimer) {
-        clearTimeout(toastTimer);
-    }
-
+    if (toastTimer) clearTimeout(toastTimer);
     toastTimer = setTimeout(() => {
-        toast.style.opacity = '0';
         setTimeout(() => {
             if (toast) {
                 toast.remove();
             }
         }, 100);
     }, 500);
+}
+
+function spawnToast() {
+    toast = document.createElement('div');
+    toast.id = TOAST_ID;
+    toast.style.position = 'fixed';
+    toast.style.top = '5em';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.background = '#333';
+    toast.style.color = '#fff';
+    toast.style.padding = '10px 20px';
+    toast.style.borderRadius = '0.3em';
+    toast.style.fontSize = '4em';
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.1s ease';
+    toast.style.zIndex = '9999';
+    toast.style.opacity = '0.75';
+    document.body.appendChild(toast);
+    return toast;
 }

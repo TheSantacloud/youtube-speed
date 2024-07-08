@@ -42,7 +42,6 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
     const tabId = activeInfo.tabId;
-    console.log("ACTIVATED", tabId);
     chrome.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
         if (!chrome.runtime.lastError && response.status === "pong") {
             sendChannelsData();
@@ -54,7 +53,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     chrome.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
-        if (!chrome.runtime.lastError && changeInfo.status === "complete" && response.status === "pong") {
+        if (!chrome.runtime.lastError && changeInfo?.status === "complete" && response?.status === "pong") {
             sendChannelsData();
             sendDefaultPlaybackRate();
         }
