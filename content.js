@@ -72,7 +72,7 @@ function changeRate() {
     const channelName = channelNameContainer.innerText;
     const currentRate = video.playbackRate;
 
-    if (currentRate !== defaultPlaybackRate) return;
+    if (currentRate !== defaultPlaybackRate && video.currentTime > 3) return;
 
     if (channelName in channelsData && channelsData[channelName].playbackRate !== currentRate) {
         modifyRate(channelsData[channelName].playbackRate - currentRate);

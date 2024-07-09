@@ -1,6 +1,6 @@
 {
     "name": "youtube-speed",
-    "version": "0.6.5",
+    "version": "0.6.6",
     "description": "Better control over YouTube playing speed",
     "manifest_version": 3,
     "permissions": [
