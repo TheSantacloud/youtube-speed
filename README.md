@@ -5,7 +5,6 @@ A simple chrome extension to control YouTube playback rate with keybinds
 
 ## TODO:
 
-- [X] Bugfix: after an ad playback resets to original
 - [X] Set custom default rate for specific channels
 - [X] UX friendly way to show the current playback rate
 - [X] Search bar
@@ -13,7 +12,14 @@ A simple chrome extension to control YouTube playback rate with keybinds
 - [X] Set default rate for all videos
 - [X] Auto-skip commercials when available
 - [X] When switching videos within the same tab, adjust speed to the current channel
-- [X] Bugfix: when a video starts with an ad - skip it too
-- [X] Bugfix: when the video is opened in a new tab, youtube speed doesnt load the content script (requires refresh)
-- [X] Bugfix: maintain playback ratio when leaving and returning to tab
-- [ ] Bugfix: playlist next video doesnt adjust playback rate
+- [X] Speed up non-skippable ads
+- [ ] Sorting based on clicking the column header
+
+## Bugs:
+
+- [X] After an ad playback resets to original
+- [X] When a video starts with an ad - skip it too
+- [X] When the video is opened in a new tab, youtube speed doesnt load the content script (requires refresh)
+- [X] Maintain playback ratio when leaving and returning to tab
+- [ ] Playlist next video doesnt adjust playback rate
+- [ ] Navigating to YouTube page from history (Cmd+Shift+T) doesn't change playback rate

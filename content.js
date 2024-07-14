@@ -79,7 +79,7 @@ function changeRate() {
     } else if (!(channelName in channelsData)) {
         modifyRate(defaultPlaybackRate - currentRate);
     }
-    skipAd();
+    skipAd(video);
 }
 
 function modifyRate(delta) {
@@ -101,14 +101,17 @@ function modifyRate(delta) {
 }
 
 function onVideoSwitch(playbackRate) {
-    skipAd();
     let video = document.querySelector("video");
     video.playbackRate = playbackRate;
+    skipAd(video);
 }
 
-function skipAd() {
+function skipAd(video) {
     waitForElement(".ytp-skip-ad-button", () => {
         document.querySelector(".ytp-skip-ad-button").click()
+    }, 10);
+    waitForElement(".ytp-preview-ad", () => {
+        video.playbackRate = 16; // max allowed
     }, 10);
 }
 
