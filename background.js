@@ -21,14 +21,15 @@ function sendDefaultPlaybackRate() {
     });
 }
 
-chrome.webNavigation.onHistoryStateUpdated.addListener((details) =>
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+    if (!(details && details.url.includes("youtube"))) return;
     chrome.tabs.sendMessage(details.tabId, { action: "ping" }, (response) => {
         if (details.url.includes("watch?v") && !chrome.runtime.lastError && response.status === "pong") {
             chrome.tabs.sendMessage(details.tabId, { action: "new_video" })
                 , { url: [{ "pathContains": "watch" }] }
         }
-    })
-);
+    });
+});
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace !== 'sync') return;

@@ -23,3 +23,4 @@ A simple chrome extension to control YouTube playback rate with keybinds
 - [X] Maintain playback ratio when leaving and returning to tab
 - [ ] Playlist next video doesnt adjust playback rate
 - [ ] Navigating to YouTube page from history (Cmd+Shift+T) doesn't change playback rate
+- [ ] Set rate limit under default doesn't apply

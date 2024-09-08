@@ -1,5 +1,5 @@
 const RATE = 0.5;
-const TOAST_TIMEOUT = 0.5;
+const TOAST_TIMEOUT_IN_MS = 500;
 const TOAST_ID = 'yt-speed-toast';
 
 let toastTimer;
@@ -79,7 +79,7 @@ function changeRate() {
     } else if (!(channelName in channelsData)) {
         modifyRate(defaultPlaybackRate - currentRate);
     }
-    skipAd(video);
+    speedupAd(video);
 }
 
 function modifyRate(delta) {
@@ -103,12 +103,12 @@ function modifyRate(delta) {
 function onVideoSwitch(playbackRate) {
     let video = document.querySelector("video");
     video.playbackRate = playbackRate;
-    skipAd(video);
+    speedupAd(video);
 }
 
-function skipAd(video) {
+function speedupAd(video) {
     waitForElement(".ytp-skip-ad-button", () => {
-        document.querySelector(".ytp-skip-ad-button").click()
+        video.playbackRate = 16; // max allowed
     }, 10);
     waitForElement(".ytp-preview-ad", () => {
         video.playbackRate = 16; // max allowed
@@ -142,7 +142,7 @@ function notify(message) {
                 toast.remove();
             }
         }, 100);
-    }, 500);
+    }, TOAST_TIMEOUT_IN_MS);
 }
 
 function spawnToast() {
