@@ -5,6 +5,32 @@ function getVideoDetails() {
     return { channelName, channelUrl, playbackRate };
 }
 
+async function executeGetVideoDetails(tabId) {
+    if (chrome.scripting && chrome.scripting.executeScript) {
+        const [result] = await chrome.scripting.executeScript({
+            target: { tabId },
+            func: getVideoDetails,
+        });
+        return result.result;
+    } else if (chrome.tabs && chrome.tabs.executeScript) {
+        return new Promise((resolve, reject) => {
+            chrome.tabs.executeScript(
+                tabId,
+                { code: '(' + getVideoDetails.toString() + ')();' },
+                (results) => {
+                    if (chrome.runtime.lastError) {
+                        return reject(chrome.runtime.lastError);
+                    }
+                    resolve(results && results[0]);
+                }
+            );
+        });
+    } else {
+        throw new Error('No supported API available to execute scripts.');
+    }
+}
+
+
 function sendChannelsData() {
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         chrome.storage.sync.get("channelsData", (data) => {
@@ -71,10 +97,11 @@ chrome.commands.onCommand.addListener(async (command) => {
     } else if (command === "save_rate") {
         const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
         const tabId = tabs[0].id;
-        const [result] = await chrome.scripting.executeScript({
-            target: { tabId },
-            func: getVideoDetails,
-        });
+        //const [result] = await chrome.scripting.executeScript({
+        //    target: { tabId },
+        //    func: getVideoDetails,
+        //});
+        const result = await executeGetVideoDetails(tabId);
 
         if (!result) return;
 
