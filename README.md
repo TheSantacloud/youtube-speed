@@ -31,7 +31,25 @@ In MacOS, `Alt` will be treated as `Option`
 
 ![saved-new](assets/saved-new.png?raw=true "Save new playback rate")
 
+---
+
 ## Development
+
+### Contributing
+
+I'm not an open-source maintainer, this is a repository with an extension that I made for me, just like
+any one of the 100s of other tools that I've made for myself. I try to go over PRs and stuff, but this is
+generally for me, and if you suggest a feature that I don't want - I might not accept it.
+
+I gave up on focusing on ads, because YouTube keeps changing their things and some things work, while others don't.
+The current status for ads is that most of them are sped up. If you want to remove ads - you should probably buy YouTube premium.
+
+I don't use GitHub issues for myself (I have my own task management system), but I encourage you to use it
+if you find any bugs or request any features. Just keep in mind that if you want them to actually be
+developed, you should probably implement them yourselves. I'm pretty happy with the current state of the extension.
+
+Below is a general list that I almost never look at of TODOs and Bugs that I've found along the way that I might
+(and might not) fix in the future. Feel free to do those as well if you like.
 
 ### TODO:
 
@@ -48,6 +66,7 @@ In MacOS, `Alt` will be treated as `Option`
 - [ ] Add customizable max speed input
 - [ ] Publish to Chrome extension store
 - [ ] Publish to Firefox addon store (and register as addon)
+- [ ] Toggleble ad speed-up
 
 ### Bugs:
 
