@@ -16,11 +16,11 @@ In MacOS, `Alt` will be treated as `Option`
 
 ### Screenshots
 
-![popup](screenshots/popup.png?raw=true "Popup")
+![popup](assets/popup.png?raw=true "Popup")
 
-![playback-rate](screenshots/playback-rate.png?raw=true "Change playback rate")
+![playback-rate](assets/playback-rate.png?raw=true "Change playback rate")
 
-![saved-new](screenshots/saved-new.png?raw=true "Save new playback rate")
+![saved-new](assets/saved-new.png?raw=true "Save new playback rate")
 
 ## Development
 
