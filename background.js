@@ -1,3 +1,6 @@
+const extensionAPI = window.chrome || window.browser;
+const scripting = extensionAPI.scripting || null;
+
 function getVideoDetails() {
     const channelName = document.querySelector('ytd-video-owner-renderer ytd-channel-name').innerText;
     const channelUrl = document.querySelector('ytd-video-owner-renderer ytd-channel-name a.yt-simple-endpoint').href;
@@ -6,20 +9,20 @@ function getVideoDetails() {
 }
 
 async function executeGetVideoDetails(tabId) {
-    if (chrome.scripting && chrome.scripting.executeScript) {
-        const [result] = await chrome.scripting.executeScript({
+    if (extensionAPI.scripting && extensionAPI.scripting.executeScript) {
+        const [result] = await extensionAPI.scripting.executeScript({
             target: { tabId },
             func: getVideoDetails,
         });
-        return result.result;
-    } else if (chrome.tabs && chrome.tabs.executeScript) {
+        return result.result !== undefined ? result.result : result;
+    } else if (extensionAPI.tabs && extensionAPI.tabs.executeScript) {
         return new Promise((resolve, reject) => {
-            chrome.tabs.executeScript(
+            extensionAPI.tabs.executeScript(
                 tabId,
-                { code: '(' + getVideoDetails.toString() + ')();' },
+                { code: `(${getVideoDetails.toString()})();` },
                 (results) => {
-                    if (chrome.runtime.lastError) {
-                        return reject(chrome.runtime.lastError);
+                    if (extensionAPI.runtime.lastError) {
+                        return reject(extensionAPI.runtime.lastError);
                     }
                     resolve(results && results[0]);
                 }
@@ -30,34 +33,33 @@ async function executeGetVideoDetails(tabId) {
     }
 }
 
-
 function sendChannelsData() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        chrome.storage.sync.get("channelsData", (data) => {
-            chrome.tabs.sendMessage(tabs[0].id, { channelsData: data["channelsData"] });
+    extensionAPI.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        extensionAPI.storage.sync.get("channelsData", (data) => {
+            extensionAPI.tabs.sendMessage(tabs[0].id, { channelsData: data["channelsData"] });
         });
     });
 }
 
 function sendDefaultPlaybackRate() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        chrome.storage.sync.get("defaultPlaybackRate", (data) => {
-            chrome.tabs.sendMessage(tabs[0].id, { defaultPlaybackRate: data["defaultPlaybackRate"] });
+    extensionAPI.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        extensionAPI.storage.sync.get("defaultPlaybackRate", (data) => {
+            extensionAPI.tabs.sendMessage(tabs[0].id, { defaultPlaybackRate: data["defaultPlaybackRate"] });
         });
     });
 }
 
-chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+extensionAPI.webNavigation.onHistoryStateUpdated.addListener((details) => {
     if (!(details && details.url.includes("youtube"))) return;
-    chrome.tabs.sendMessage(details.tabId, { action: "ping" }, (response) => {
-        if (details.url.includes("watch?v") && !chrome.runtime.lastError && response.status === "pong") {
-            chrome.tabs.sendMessage(details.tabId, { action: "new_video" })
+    extensionAPI.tabs.sendMessage(details.tabId, { action: "ping" }, (response) => {
+        if (details.url.includes("watch?v") && !extensionAPI.runtime.lastError && response.status === "pong") {
+            extensionAPI.tabs.sendMessage(details.tabId, { action: "new_video" })
                 , { url: [{ "pathContains": "watch" }] }
         }
     });
 });
 
-chrome.storage.onChanged.addListener((changes, namespace) => {
+extensionAPI.storage.onChanged.addListener((changes, namespace) => {
     if (namespace !== 'sync') return;
     if (changes.channelsData) {
         sendChannelsData();
@@ -67,10 +69,10 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
 });
 
-chrome.tabs.onActivated.addListener((activeInfo) => {
+extensionAPI.tabs.onActivated.addListener((activeInfo) => {
     const tabId = activeInfo.tabId;
-    chrome.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
-        if (!chrome.runtime.lastError && response.status === "pong") {
+    extensionAPI.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
+        if (!extensionAPI.runtime.lastError && response.status === "pong") {
             sendChannelsData();
             sendDefaultPlaybackRate();
         }
@@ -78,9 +80,9 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 });
 
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-    chrome.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
-        if (!chrome.runtime.lastError && changeInfo?.status === "complete" && response?.status === "pong") {
+extensionAPI.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    extensionAPI.tabs.sendMessage(tabId, { action: "ping" }, (response) => {
+        if (!extensionAPI.runtime.lastError && changeInfo?.status === "complete" && response?.status === "pong") {
             sendChannelsData();
             sendDefaultPlaybackRate();
         }
@@ -89,29 +91,28 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-chrome.commands.onCommand.addListener(async (command) => {
+extensionAPI.commands.onCommand.addListener(async (command) => {
     if (command === "increase_rate" || command === "decrease_rate") {
-        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, { action: command });
+        extensionAPI.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+            extensionAPI.tabs.sendMessage(tabs[0].id, { action: command });
         });
     } else if (command === "save_rate") {
-        const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+        const tabs = await extensionAPI.tabs.query({ active: true, lastFocusedWindow: true });
         const tabId = tabs[0].id;
-        //const [result] = await chrome.scripting.executeScript({
-        //    target: { tabId },
-        //    func: getVideoDetails,
-        //});
-        const result = await executeGetVideoDetails(tabId);
+        let result = await executeGetVideoDetails(tabId);
 
-        if (!result) return;
+        if (result.result !== undefined) {
+            result = result.result;
+        }
+        if (!result || result === undefined) return;
 
-        const { channelName, channelUrl, playbackRate } = result.result;
-        chrome.storage.sync.get("channelsData", (data) => {
-            let channelsData = data["channelsData"];
+        const { channelName, channelUrl, playbackRate } = result;
+        extensionAPI.storage.sync.get("channelsData", (data) => {
+            let channelsData = data["channelsData"] || {};
             channelsData[channelName] = { playbackRate, channelUrl };
-            chrome.storage.sync.set({ channelsData: channelsData }, async () => {
+            extensionAPI.storage.sync.set({ channelsData: channelsData }, async () => {
                 await sleep(100);
-                chrome.tabs.sendMessage(tabId, {
+                extensionAPI.tabs.sendMessage(tabId, {
                     action: "toast",
                     toastMessage: `Saved new playback rate ${playbackRate}`,
                 });
