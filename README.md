@@ -1,9 +1,18 @@
 # YouTube Speed
 
-A simple chrome extension to control YouTube playback rate with keybinds, and save channel specific
+A simple extension to control YouTube playback rate with keybinds, and save channel specific
 speeds for later use.
 
+I created this addon because for some reason YouTube didn't incorporate keybindings to control playback speed.
+I've been using it for a long while, and it's an inseperable part of my browsing experience. So might as well share.
+
 ## How to use
+
+### Features
+
+- **Default Playback Rate** - you can set your default playback rate to a specific multiplier (default x1.5)
+- **Keybinds** - basic keybinds to control the playback speed and save them
+- **Save playback for specific channels** - save a playback speed for a specific channel, can be browsed in the popup
 
 ### Default keybinds
 
